@@ -1,0 +1,1 @@
+../../../references/result-contract.md

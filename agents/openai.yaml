@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent 文件协作"
+  short_description: "多 Agent/脚本并发写入的稳定读写、乐观锁与中断恢复协议"
+  default_prompt: "使用 $agent-fs 安全读写共享文件：先 read-fresh 取基线，再用 write-if-match/edit-if-match 受控写入。"

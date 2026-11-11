@@ -1,0 +1,63 @@
+[project]
+name = "agent-fs"
+version = "0.2.0"
+description = "多 Agent 文件协作的新鲜度校验与乐观并发控制 CLI：稳定快照、新鲜读取、哈希校验、变更检测"
+requires-python = ">=3.9"
+# 核心零第三方依赖，仅使用标准库，保证 Mac/Windows/Linux 开箱即用
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.4",
+    "pytest>=8.0",
+    "pyyaml>=6.0",
+    # wheel 端到端打包用例依赖 python -m build；缺依赖时该用例会静默 skip
+    "build>=1.0",
+]
+
+[project.scripts]
+agent-fs = "agent_fs.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["agent_fs*"]
+
+# ─── package-data（确保 wheel 交付完整 Skill 资源，比照 doc-toolkit 的做法）
+# SKILL.md 与 references/*.md 实际位于仓库根 tools/agent-fs/ 下，不在
+# src/agent_fs/ 包目录内，setuptools 无法直接打包包目录外的文件。为避免
+# 多份内容需手动同步维护，采用与 doc-toolkit 一致的符号链接方案：
+# src/agent_fs/SKILL.md → ../../SKILL.md，src/agent_fs/references/<name>.md →
+# ../../../references/<name>.md（逐文件链接，目录级链接的 setuptools 行为不可靠）。
+# 只维护包根一份实体；setuptools 构建时解析符号链接并把真实内容打进 wheel。
+[tool.setuptools.package-data]
+agent_fs = [
+    "SKILL.md",
+    "references/*.md",
+]
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# ─── Ruff Lint ────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = [
+    "E501",  # 长行由 line-length 控制
+    "UP007", # 保留 Optional[X] 写法
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "ANN", "D"]
+
+# ─── pytest ───────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+pythonpath = ["src"]
+addopts = "-v --tb=short"

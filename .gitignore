@@ -1,0 +1,11 @@
+# Skill 分发时排除的本地缓存与构建产物（mtskills 打包读取本文件）
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 构建产物不入库
+build/
+.pytest_cache/
+.ruff_cache/
